@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uruk Health - Advanced Healthcare Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-spinner"></div>
+        <p>Initializing Uruk Health Platform...</p>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="app" class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <i class="fas fa-heart-pulse"></i>
+                    <span>Uruk Health</span>
+                </div>
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <ul class="nav-menu">
+                <li class="nav-item active" data-page="dashboard">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Dashboard</span>
+                </li>
+                <li class="nav-item emergency-ambulance-nav" data-page="emergency-ambulance">
+                    <i class="fas fa-ambulance"></i>
+                    <span>Emergency Ambulance</span>
+                    <div class="emergency-badge">🚨</div>
+                </li>
+                <li class="nav-item medical-buy-nav" data-page="medical-buy">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Medical Buy</span>
+                    <div class="nav-badge">New</div>
+                </li>
+                <li class="nav-item" data-page="vitals">
+                    <i class="fas fa-heartbeat"></i>
+                    <span>Health Vitals</span>
+                </li>
+                <li class="nav-item" data-page="ai-assistant">
+                    <i class="fas fa-robot"></i>
+                    <span>AI Assistant</span>
+                </li>
+                <li class="nav-item" data-page="medical-records">
+                    <i class="fas fa-file-medical"></i>
+                    <span>Medical Records</span>
+                </li>
+                <li class="nav-item" data-page="appointments">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Appointments</span>
+                </li>
+                <li class="nav-item" data-page="pharmacy">
+                    <i class="fas fa-pills"></i>
+                    <span>Pharmacy</span>
+                </li>
+                <li class="nav-item" data-page="doctor-portal">
+                    <i class="fas fa-user-md"></i>
+                    <span>Doctor Portal</span>
+                </li>
+                <li class="nav-item" data-page="blockchain">
+                    <i class="fas fa-cube"></i>
+                    <span>Blockchain</span>
+                </li>
+                <li class="nav-item" data-page="emergency">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>Emergency</span>
+                </li>
+            </ul>
+            
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <div class="avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-info">
+                        <span class="user-name">Dr. Rajesh Kumar</span>
+                        <span class="user-id">URK-2024-1001</span>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <h1 id="pageTitle">Health Dashboard</h1>
+                    <div class="breadcrumb">
+                        <span>Home</span> / <span id="currentPage">Dashboard</span>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="cart-icon" id="cartIcon">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count" id="cartCount">1</span>
+                    </div>
+                    <div class="notifications" id="notificationBtn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-count">2</span>
+                    </div>
+                    <div class="theme-toggle" id="themeToggle">
+                        <i class="fas fa-moon"></i>
+                    </div>
+                    <div class="user-menu" id="userMenu">
+                        <i class="fas fa-user-circle"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard">
+                <div class="dashboard-grid">
+                    <!-- Health Score Card -->
+                    <div class="card health-score-card">
+                        <div class="card-header">
+                            <h3>Health Score</h3>
+                            <div class="blockchain-badge verified">
+                                <i class="fas fa-shield-alt"></i>
+                                Blockchain Verified
+                            </div>
+                        </div>
+                        <div class="health-score">
+                            <div class="score-circle">
+                                <svg class="progress-ring" width="120" height="120">
+                                    <circle class="progress-ring-circle" cx="60" cy="60" r="50"></circle>
+                                </svg>
+                                <div class="score-text">
+                                    <span class="score-number">85</span>
+                                    <span class="score-label">Excellent</span>
+                                </div>
+                            </div>
+                            <div class="ai-insights">
+                                <h4><i class="fas fa-brain"></i> AI Insights</h4>
+                                <ul id="aiInsightsList">
+                                    <li>Blood pressure trending upward</li>
+                                    <li>Exercise routine needs improvement</li>
+                                    <li>Medication adherence excellent</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="card quick-actions-card">
+                        <div class="card-header">
+                            <h3>Quick Actions</h3>
+                        </div>
+                        <div class="quick-actions">
+                            <button class="action-btn emergency-ambulance" id="emergencyAmbulanceBtn">
+                                <i class="fas fa-ambulance"></i>
+                                <span>Emergency Ambulance</span>
+                            </button>
+                            <button class="action-btn medical-buy" id="medicalBuyBtn">
+                                <i class="fas fa-pills"></i>
+                                <span>Medical Buy</span>
+                            </button>
+                            <button class="action-btn vitals" id="addVitalsBtn">
+                                <i class="fas fa-heartbeat"></i>
+                                <span>Add Vitals</span>
+                            </button>
+                            <button class="action-btn ai-chat" id="aiChatBtn">
+                                <i class="fas fa-robot"></i>
+                                <span>AI Assistant</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Vitals Chart -->
+                    <div class="card chart-card">
+                        <div class="card-header">
+                            <h3>Vitals Trends</h3>
+                            <div class="chart-controls">
+                                <select id="chartPeriod">
+                                    <option value="7">7 Days</option>
+                                    <option value="30">30 Days</option>
+                                    <option value="90">90 Days</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="chart-container" style="position: relative; height: 300px;">
+                            <canvas id="vitalsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity -->
+                    <div class="card activity-card">
+                        <div class="card-header">
+                            <h3>Recent Activity</h3>
+                        </div>
+                        <div class="activity-list" id="activityList">
+                            <!-- Activity items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Ambulance Page -->
+            <div class="page" id="emergency-ambulance">
+                <div class="ambulance-container">
+                    <!-- Emergency Header -->
+                    <div class="emergency-ambulance-header">
+                        <div class="emergency-status">
+                            <div class="emergency-indicator">
+                                <i class="fas fa-ambulance"></i>
+                                <span class="pulse-dot"></span>
+                            </div>
+                            <div class="status-info">
+                                <h2>Emergency Ambulance Service</h2>
+                                <p>Real-time ambulance tracking and instant booking</p>
+                                <div class="location-info">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span id="userLocation">123, Health Colony, Mumbai, Maharashtra</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="emergency-actions-header">
+                            <button class="panic-btn" id="panicBtn">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                PANIC
+                            </button>
+                            <button class="voice-activation-btn" id="voiceBtn">
+                                <i class="fas fa-microphone"></i>
+                                Voice
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Live Map and Ambulance Tracking -->
+                    <div class="map-tracking-section">
+                        <div class="map-container">
+                            <div class="live-map" id="liveMap">
+                                <div class="map-header">
+                                    <h3>Live Ambulance Tracking</h3>
+                                    <div class="map-controls">
+                                        <button class="map-btn" id="refreshMapBtn">
+                                            <i class="fas fa-sync-alt"></i>
+                                        </button>
+                                        <button class="map-btn" id="centerMapBtn">
+                                            <i class="fas fa-crosshairs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="map-view" id="mapView">
+                                    <!-- Simulated map with ambulance markers -->
+                                    <div class="user-marker" id="userMarker">
+                                        <i class="fas fa-user"></i>
+                                        <span class="marker-label">You</span>
+                                    </div>
+                                    <div class="ambulance-marker available" id="ambulance-1" data-id="AMB-001">
+                                        <i class="fas fa-ambulance"></i>
+                                        <span class="marker-label">AMB-001</span>
+                                    </div>
+                                    <div class="ambulance-marker available" id="ambulance-2" data-id="AMB-002">
+                                        <i class="fas fa-ambulance"></i>
+                                        <span class="marker-label">AMB-002</span>
+                                    </div>
+                                    <div class="ambulance-marker en-route" id="ambulance-3" data-id="AMB-003">
+                                        <i class="fas fa-ambulance"></i>
+                                        <span class="marker-label">AMB-003</span>
+                                    </div>
+                                    <div class="ambulance-marker available" id="ambulance-4" data-id="AMB-004">
+                                        <i class="fas fa-ambulance"></i>
+                                        <span class="marker-label">AMB-004</span>
+                                    </div>
+                                    <div class="hospital-marker" id="hospital-1">
+                                        <i class="fas fa-hospital"></i>
+                                        <span class="marker-label">Apollo</span>
+                                    </div>
+                                    <div class="hospital-marker" id="hospital-2">
+                                        <i class="fas fa-hospital"></i>
+                                        <span class="marker-label">Max</span>
+                                    </div>
+                                </div>
+                                <div class="map-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-marker available"></div>
+                                        <span>Available</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker en-route"></div>
+                                        <span>En Route</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-marker busy"></div>
+                                        <span>Busy</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Tracking Panel -->
+                        <div class="tracking-panel" id="trackingPanel">
+                            <div class="tracking-header">
+                                <h3>Live Tracking</h3>
+                                <div class="tracking-status" id="trackingStatus">
+                                    <span class="status-indicator standby"></span>
+                                    Standby
+                                </div>
+                            </div>
+                            <div class="tracking-content" id="trackingContent">
+                                <div class="no-tracking">
+                                    <i class="fas fa-search"></i>
+                                    <p>No active ambulance booking</p>
+                                    <small>Book an ambulance to see live tracking</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Available Ambulances -->
+                    <div class="ambulances-section">
+                        <div class="section-header">
+                            <h3>Available Ambulances</h3>
+                            <div class="filters">
+                                <select id="ambulanceTypeFilter" class="form-control">
+                                    <option value="">All Types</option>
+                                    <option value="Basic Life Support">Basic Life Support</option>
+                                    <option value="Advanced Life Support">Advanced Life Support</option>
+                                    <option value="ICU Ambulance">ICU Ambulance</option>
+                                    <option value="Patient Transport">Patient Transport</option>
+                                </select>
+                                <select id="ambulanceSortFilter" class="form-control">
+                                    <option value="distance">Sort by Distance</option>
+                                    <option value="eta">Sort by ETA</option>
+                                    <option value="rating">Sort by Rating</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="ambulances-grid" id="ambulancesGrid">
+                            <!-- Ambulance cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Emergency Types -->
+                    <div class="emergency-types-section">
+                        <h3>Emergency Type Selection</h3>
+                        <div class="emergency-types-grid" id="emergencyTypesGrid">
+                            <!-- Emergency type cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Nearby Hospitals -->
+                    <div class="hospitals-section">
+                        <h3>Nearby Hospitals</h3>
+                        <div class="hospitals-grid" id="hospitalsGrid">
+                            <!-- Hospital cards will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other existing pages... -->
+            <div class="page" id="medical-buy">
+                <div class="medical-buy-container">
+                    <!-- Medical Buy Header -->
+                    <div class="medical-buy-header">
+                        <div class="header-content">
+                            <h2>Medical Purchase Center</h2>
+                            <p>Order medicines with prescription verification and blockchain security</p>
+                        </div>
+                        <div class="quick-stats">
+                            <div class="stat">
+                                <span class="stat-value">₹1,250</span>
+                                <span class="stat-label">Loyalty Points</span>
+                            </div>
+                            <div class="stat">
+                                <span class="stat-value">15%</span>
+                                <span class="stat-label">Insurance Coverage</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search & Categories -->
+                    <div class="search-section">
+                        <div class="search-container">
+                            <input type="text" id="medicineSearch" placeholder="Search medicines, brands, or scan prescription..." class="form-control search-input">
+                            <button class="btn btn--primary search-btn" id="searchBtn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                            <button class="btn btn--outline scan-btn" id="scanBtn">
+                                <i class="fas fa-camera"></i>
+                                Scan Prescription
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Medicine Categories -->
+                    <div class="categories-section">
+                        <h3>Shop by Category</h3>
+                        <div class="categories-grid" id="categoriesGrid">
+                            <!-- Categories will be populated by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Featured Medicines -->
+                    <div class="medicines-section">
+                        <div class="section-header">
+                            <h3>Featured Medicines</h3>
+                            <div class="filters">
+                                <select id="sortFilter" class="form-control">
+                                    <option value="popularity">Sort by Popularity</option>
+                                    <option value="price-low">Price: Low to High</option>
+                                    <option value="price-high">Price: High to Low</option>
+                                    <option value="rating">Highest Rated</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="medicines-grid" id="medicinesGrid">
+                            <!-- Medicines will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other existing pages (vitals, ai-assistant, etc.) remain the same -->
+            <div class="page" id="vitals">
+                <div class="vitals-container">
+                    <div class="card vitals-input-card">
+                        <div class="card-header">
+                            <h3>Record Your Vitals</h3>
+                            <div class="ai-badge">
+                                <i class="fas fa-brain"></i>
+                                AI Analysis Enabled
+                            </div>
+                        </div>
+                        <form class="vitals-form" id="vitalsForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label">Heart Rate (bpm)</label>
+                                    <input type="number" class="form-control" id="heartRate" min="40" max="200" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Blood Pressure (mmHg)</label>
+                                    <input type="text" class="form-control" id="bloodPressure" placeholder="120/80" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Temperature (°F)</label>
+                                    <input type="number" class="form-control" id="temperature" min="95" max="110" step="0.1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Oxygen Saturation (%)</label>
+                                    <input type="number" class="form-control" id="oxygenSat" min="80" max="100" required>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn--primary">
+                                <i class="fas fa-save"></i>
+                                Save Vitals & Get AI Analysis
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="card vitals-history-card">
+                        <div class="card-header">
+                            <h3>Vitals History</h3>
+                            <div class="blockchain-badge verified">
+                                <i class="fas fa-cube"></i>
+                                Blockchain Secured
+                            </div>
+                        </div>
+                        <div class="vitals-history" id="vitalsHistory">
+                            <!-- History items will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Placeholder pages -->
+            <div class="page" id="ai-assistant">
+                <div class="ai-container">
+                    <div class="card ai-chat-card">
+                        <div class="card-header">
+                            <h3>AI Health Assistant</h3>
+                            <div class="ai-status online">
+                                <i class="fas fa-circle"></i>
+                                Online
+                            </div>
+                        </div>
+                        <div class="chat-container" id="chatContainer">
+                            <div class="chat-messages" id="chatMessages">
+                                <!-- Chat messages will be populated by JavaScript -->
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="chatInput" placeholder="Ask me anything about your health...">
+                            <button id="sendChatBtn">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="medical-records">
+                <div class="records-container">
+                    <div class="card digital-vault-card">
+                        <div class="card-header">
+                            <h3>Digital Medical Vault</h3>
+                            <div class="blockchain-badge verified">
+                                <i class="fas fa-cube"></i>
+                                157 Records Secured
+                            </div>
+                        </div>
+                        <div class="vault-content">
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Drag & drop medical documents here</p>
+                                <button class="btn btn--outline">Choose Files</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="appointments">
+                <div class="appointments-container">
+                    <div class="card appointments-card">
+                        <div class="card-header">
+                            <h3>Your Appointments</h3>
+                            <button class="btn btn--primary" id="newAppointmentBtn">
+                                <i class="fas fa-plus"></i>
+                                Book New
+                            </button>
+                        </div>
+                        <div class="appointments-list" id="appointmentsList">
+                            <!-- Appointments will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="pharmacy">
+                <div class="pharmacy-container">
+                    <div class="card medicine-search-card">
+                        <div class="card-header">
+                            <h3>Medicine Search</h3>
+                        </div>
+                        <div class="search-container">
+                            <input type="text" id="medicineSearchOld" placeholder="Search for medicines..." class="form-control">
+                            <button class="btn btn--primary" id="searchMedicineBtn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="doctor-portal">
+                <div class="doctor-dashboard">
+                    <div class="stats-grid">
+                        <div class="stat-card earnings">
+                            <div class="stat-icon">
+                                <i class="fas fa-rupee-sign"></i>
+                            </div>
+                            <div class="stat-content">
+                                <h3>₹1,25,000</h3>
+                                <p>Monthly Earnings</p>
+                                <span class="growth positive">+12.5%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="blockchain">
+                <div class="blockchain-container">
+                    <div class="blockchain-stats">
+                        <div class="card blockchain-overview-card">
+                            <div class="card-header">
+                                <h3>Blockchain Overview</h3>
+                                <div class="blockchain-status verified">
+                                    <i class="fas fa-check-circle"></i>
+                                    Fully Verified
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="page" id="emergency">
+                <div class="emergency-container">
+                    <div class="emergency-header">
+                        <h2>Emergency Services</h2>
+                        <div class="emergency-status">
+                            <i class="fas fa-shield-alt"></i>
+                            Emergency Mode: Ready
+                        </div>
+                    </div>
+                    
+                    <div class="emergency-actions">
+                        <button class="emergency-btn primary" id="callEmergencyBtn">
+                            <i class="fas fa-phone"></i>
+                            <span>Call Emergency</span>
+                            <small>1800-URUK-911</small>
+                        </button>
+                        <button class="emergency-btn location" id="shareLocationBtn">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>Share Location</span>
+                            <small>Auto-share with Uruk team</small>
+                        </button>
+                    </div>
+
+                    <div class="card emergency-contacts-card">
+                        <div class="card-header">
+                            <h3>Emergency Contacts</h3>
+                        </div>
+                        <div class="contacts-list" id="emergencyContactsList">
+                            <!-- Emergency contacts will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Floating Emergency Ambulance Button -->
+    <button class="floating-emergency-ambulance" id="floatingEmergencyAmbulance">
+        <i class="fas fa-ambulance"></i>
+    </button>
+
+    <!-- Floating Medical Buy Button -->
+    <button class="floating-medical-buy" id="floatingMedicalBuy">
+        <i class="fas fa-pills"></i>
+    </button>
+
+    <!-- Modals -->
+    <div class="modal hidden" id="ambulanceBookingModal">
+        <div class="modal-content ambulance-booking-content">
+            <div class="modal-header">
+                <h3>Book Emergency Ambulance</h3>
+                <button class="modal-close" id="closeAmbulanceBookingModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="booking-form" id="ambulanceBookingForm">
+                    <div class="ambulance-info" id="selectedAmbulanceInfo">
+                        <!-- Selected ambulance details -->
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Patient Name *</label>
+                            <input type="text" class="form-control" id="patientName" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Number *</label>
+                            <input type="tel" class="form-control" id="patientPhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Emergency Type *</label>
+                            <select class="form-control" id="emergencyType" required>
+                                <option value="">Select Emergency Type</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Pickup Address *</label>
+                            <textarea class="form-control" id="pickupAddress" rows="2" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Destination Hospital</label>
+                            <select class="form-control" id="destinationHospital">
+                                <option value="">Choose Hospital (Optional)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Additional Notes</label>
+                            <textarea class="form-control" id="additionalNotes" rows="3" placeholder="Any specific medical conditions or requirements..."></textarea>
+                        </div>
+                    </div>
+                    <div class="booking-summary">
+                        <div class="summary-row">
+                            <span>Estimated Arrival:</span>
+                            <span id="estimatedArrival">8 minutes</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Estimated Cost:</span>
+                            <span id="estimatedCost">₹1,500 - ₹2,500</span>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--outline" id="cancelBooking">Cancel</button>
+                        <button type="submit" class="btn btn--primary emergency-btn-primary">
+                            <i class="fas fa-ambulance"></i>
+                            Confirm Booking
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="bookingConfirmationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Booking Confirmed!</h3>
+                <button class="modal-close" id="closeBookingConfirmationModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="confirmation-content" id="confirmationContent">
+                    <!-- Booking confirmation details -->
+                </div>
+                <div class="confirmation-actions">
+                    <button class="btn btn--primary" id="trackAmbulanceBtn">
+                        <i class="fas fa-route"></i>
+                        Track Ambulance
+                    </button>
+                    <button class="btn btn--outline" id="callDriverBtn">
+                        <i class="fas fa-phone"></i>
+                        Call Driver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Existing modals -->
+    <div class="modal hidden" id="vitalsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Vitals Saved Successfully</h3>
+                <button class="modal-close" id="closeVitalsModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="ai-analysis" id="aiAnalysisResult">
+                    <!-- AI analysis results will be displayed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="notificationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Notifications</h3>
+                <button class="modal-close" id="closeNotificationModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="notifications-list" id="notificationsList">
+                    <!-- Notifications will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal -->
+    <div class="modal hidden" id="cartModal">
+        <div class="modal-content cart-modal-content">
+            <div class="modal-header">
+                <h3>Shopping Cart</h3>
+                <button class="modal-close" id="closeCartModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="cart-content" id="cartContent">
+                    <!-- Cart items will be populated by JavaScript -->
+                </div>
+                <div class="cart-summary" id="cartSummary">
+                    <!-- Cart summary will be populated by JavaScript -->
+                </div>
+                <div class="cart-actions">
+                    <button class="btn btn--outline" id="continueShopping">Continue Shopping</button>
+                    <button class="btn btn--primary" id="proceedCheckout">Proceed to Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
