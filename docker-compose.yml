@@ -1,0 +1,374 @@
+
+# ========================================
+# URUK HEALTH BACKEND - DOCKER COMPOSE
+# Complete microservices orchestration
+# ========================================
+
+version: '3.8'
+
+services:
+  # =====================================
+  # DATABASES
+  # =====================================
+
+  postgresql:
+    image: postgres:15-alpine
+    container_name: uruk-postgresql
+    environment:
+      POSTGRES_DB: uruk_health
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: uruk123
+      POSTGRES_MULTIPLE_DATABASES: user_db,ambulance_db,records_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: uruk-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - uruk-network
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+
+  mongodb:
+    image: mongo:6
+    container_name: uruk-mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: uruk123
+      MONGO_INITDB_DATABASE: uruk_ai
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  influxdb:
+    image: influxdb:2.7-alpine
+    container_name: uruk-influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: uruk123admin
+      DOCKER_INFLUXDB_INIT_ORG: uruk-health
+      DOCKER_INFLUXDB_INIT_BUCKET: health-data
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: uruk-health-token-2025
+    ports:
+      - "8086:8086"
+    volumes:
+      - influx_data:/var/lib/influxdb2
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  # =====================================
+  # BLOCKCHAIN & STORAGE
+  # =====================================
+
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: uruk-ganache
+    ports:
+      - "8545:8545"
+    command: >
+      ganache
+      --host 0.0.0.0
+      --accounts 10
+      --defaultBalanceEther 100
+      --mnemonic "uruk health blockchain network development test mnemonic seed phrase"
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  ipfs:
+    image: ipfs/kubo:latest
+    container_name: uruk-ipfs
+    ports:
+      - "4001:4001"
+      - "5001:5001"
+      - "8080:8080"
+    volumes:
+      - ipfs_data:/data/ipfs
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  # =====================================
+  # MICROSERVICES
+  # =====================================
+
+  user-service:
+    build:
+      context: ./services/user-management
+      dockerfile: Dockerfile
+    container_name: uruk-user-service
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_NAME: uruk_health
+      DB_USER: postgres
+      DB_PASSWORD: uruk123
+      JWT_SECRET: uruk_health_secret_2025
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgresql
+      - redis
+    networks:
+      - uruk-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  health-monitoring-service:
+    build:
+      context: ./services/health-monitoring
+      dockerfile: Dockerfile
+    container_name: uruk-health-service
+    environment:
+      PYTHONPATH: /app
+      INFLUXDB_URL: http://influxdb:8086
+      INFLUXDB_TOKEN: uruk-health-token-2025
+      INFLUXDB_ORG: uruk-health
+      INFLUXDB_BUCKET: health-data
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_NAME: uruk_health
+      DB_USER: postgres
+      DB_PASSWORD: uruk123
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: uruk_health_secret_2025
+    ports:
+      - "3002:3002"
+    depends_on:
+      - postgresql
+      - redis
+      - influxdb
+    networks:
+      - uruk-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  ambulance-service:
+    build:
+      context: ./services/ambulance
+      dockerfile: Dockerfile
+    container_name: uruk-ambulance-service
+    environment:
+      NODE_ENV: development
+      PORT: 3003
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_NAME: uruk_health
+      DB_USER: postgres
+      DB_PASSWORD: uruk123
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: uruk_health_secret_2025
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY}
+    ports:
+      - "3003:3003"
+    depends_on:
+      - postgresql
+      - redis
+    networks:
+      - uruk-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  medical-records-service:
+    build:
+      context: ./services/medical-records
+      dockerfile: Dockerfile
+    container_name: uruk-records-service
+    environment:
+      PYTHONPATH: /app
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_NAME: uruk_health
+      DB_USER: postgres
+      DB_PASSWORD: uruk123
+      REDIS_URL: redis://redis:6379
+      IPFS_API: http://ipfs:5001
+      BLOCKCHAIN_URL: http://ganache:8545
+      JWT_SECRET: uruk_health_secret_2025
+      FLASK_ENV: development
+    ports:
+      - "3004:3004"
+    depends_on:
+      - postgresql
+      - redis
+      - ipfs
+      - ganache
+    volumes:
+      - ./uploads:/app/uploads
+    networks:
+      - uruk-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # =====================================
+  # API GATEWAY & LOAD BALANCER
+  # =====================================
+
+  nginx-gateway:
+    image: nginx:alpine
+    container_name: uruk-api-gateway
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - user-service
+      - health-monitoring-service
+      - ambulance-service
+      - medical-records-service
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  # =====================================
+  # MONITORING & OBSERVABILITY
+  # =====================================
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: uruk-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: uruk-grafana
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: uruk123
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    depends_on:
+      - prometheus
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
+    container_name: uruk-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.8.0
+    container_name: uruk-kibana
+    environment:
+      ELASTICSEARCH_HOSTS: http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  # =====================================
+  # MESSAGE QUEUE
+  # =====================================
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: uruk-kafka
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: uruk-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    networks:
+      - uruk-network
+    restart: unless-stopped
+
+# =====================================
+# NETWORKS & VOLUMES
+# =====================================
+
+networks:
+  uruk-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  postgres_data:
+  redis_data:
+  mongo_data:
+  influx_data:
+  ipfs_data:
+  prometheus_data:
+  grafana_data:
+  elasticsearch_data:
